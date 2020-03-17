@@ -32,10 +32,6 @@ class Favorite {
     static async getListOfUserFavorites(profile_id){
         try {
             const response = await db.any(`Select  Distinct comment.profile_id, comment.rating, comment.drink_id, comment.rating from favorite join comment on favorite.profile_id = comment.profile_id Where comment.profile_id = ${profile_id} Order by rating desc Limit 5;`)
-
-            const response = await db.any(`
-            SELECT DISTINCT drink_id FROM favorite 
-            WHERE profile_id = ${profile_id};`)
             console.log(response);
             return response;
         } catch (error) {
