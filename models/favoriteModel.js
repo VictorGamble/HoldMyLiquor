@@ -1,6 +1,7 @@
 "use strict";
 const db = require("./conn"),
-    fetch = require("node-fetch");
+    fetch = require("node-fetch"),
+    drinkModel = require("../models/drinkModel");
 
 class Favorite {
     constructor(id, profile_id, drink_id) {
@@ -20,37 +21,34 @@ class Favorite {
             return error;
         }
     };
-    static async getUserFavorites(profile_id){
+
+    static async getFavorites(profile_id) {
         try {
-            const response = await db.any(`Select  Distinct comment.drink_id, comment.review, comment.profile_id,  comment.rating from favorite join comment on favorite.profile_id = comment.profile_id Where comment.profile_id = ${profile_id} Order by rating desc Limit 8;`)
+            const response = await db.any(`
+            SELECT DISTINCT comment.drink_id, comment.title, comment.review, 
+            comment.profile_id, comment.rating FROM favorite
+            JOIN comment ON favorite.profile_id = comment.profile_id
+            WHERE comment.profile_id = ${profile_id}
+            ORDER BY rating DESC LIMIT 8;
+            `);
             return response;
         } catch (error) {
             console.error("ERROR", error);
             return error;
         }
-    }
-    static async getListOfUserFavorites(profile_id){
+    };
+
+    static async getFavoritesDrinkDetails(profile_id) {
         try {
             const response = await db.any(`Select  Distinct comment.profile_id, comment.rating, comment.drink_id, comment.rating from favorite join comment on favorite.profile_id = comment.profile_id Where comment.profile_id = ${profile_id} Order by rating desc Limit 5;`)
             console.log(response);
             return response;
         } catch (error) {
-            console.error("ERROR:", error);
+            console.error("ERROR: ", error);
             return error;
         }
     };
-
-    // static async getUserFavoriteComments(profile_id){
-    //     try {
-    //         response.map(favorite => {
-
-    //         })
-    //     } catch (error) {
-    //         console.error("ERROR:", error);
-    //         return error;
-    //     }
-    // }
-
+    
     static async getUserProfile(id) {
         try {
             const response = await db.any(`
