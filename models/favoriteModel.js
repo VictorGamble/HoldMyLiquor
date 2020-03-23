@@ -40,8 +40,31 @@ class Favorite {
 
     static async getFavoritesDrinkDetails(profile_id) {
         try {
+<<<<<<< HEAD
             const response = await db.any(`Select  Distinct comment.profile_id, comment.rating, comment.drink_id, comment.rating from favorite join comment on favorite.profile_id = comment.profile_id Where comment.profile_id = ${profile_id} Order by rating desc Limit 5;`)
             console.log(response);
+=======
+            const favoriteList = await this.getFavorites(profile_id);
+            const response = await Promise.all(favoriteList.map(async favorite => {
+                return await drinkModel.getOneCocktail(favorite.drink_id);
+            }));
+            return response;
+        } catch (error) {
+            console.error("ERROR", error);
+            return error;
+        }
+    }
+
+    static async getUserComments(profile_id) {
+        try {
+            const response = await db.any(`
+            SELECT DISTINCT comment.profile_id, comment.drink_id, comment.title,
+            comment.review, comment.rating FROM favorite
+            JOIN comment ON favorite.profile_id = comment.profile_id
+            WHERE comment.profile_id = ${ profile_id }
+            ORDER BY rating DESC LIMIT 5;
+            `);
+>>>>>>> 5f6a042241640c22cf030d172059aedf84725286
             return response;
         } catch (error) {
             console.error("ERROR: ", error);
